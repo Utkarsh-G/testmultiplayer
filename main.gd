@@ -1,31 +1,29 @@
 extends Node2D
 
 @onready var player_scene = preload("res://player.tscn")
-@onready var player_scene2 = preload("res://player_2.tscn")
 var server = ENetMultiplayerPeer.new()
 	
-@rpc("call_local","any_peer","reliable")
+# Yes, I do want this to only be issued by server, not clients.
+# also issue to self, hence call_local
+# and it needs to be reliable, hence TCP
+@rpc("call_local","authority","reliable")
 func spawn_player(peer_id: int):
-	# if peer id is 1, give it a diff color
-	# spawn for both
+	var player = player_scene.instantiate()
+	print('peer id:' + str(peer_id))
+	player.name = str(peer_id)
+	print('player name set:' + player.name)
+	add_child(player)
 	if peer_id == 1:
-		var player = player_scene.instantiate()
-		add_child(player)
 		var sprite = player.get_node('Sprite2D')
 		sprite.modulate = Color(1, 0.5, 0.5, 1)  # Light red tint
-		player.name = 'Player_' + str(peer_id)
-		print("Spawned player 1 for peer:", peer_id)
-		print('num children:' + str(get_child_count()))
-	else:
-		var player = player_scene2.instantiate()
-		add_child(player)
-		player.name = 'Player_' + str(peer_id)
-		print("Spawned player 2 for peer:", peer_id)
-		print('num children:' + str(get_child_count()))
+	print("Spawned player 1 for peer:", peer_id)
+	print('num children:' + str(get_child_count()))
+	#else:
+
 	
 
 func start_server():
-	server.create_server(12345)  # Host server on port 12345
+	server.create_server(12345)  # Host authorityserver on port 12345
 	multiplayer.multiplayer_peer = server
 	print("Server started")
 	print(multiplayer.get_peers())
