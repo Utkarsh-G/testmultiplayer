@@ -14,10 +14,10 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	if multiplayer.is_server():
+	if !multiplayer.is_server():
 		var input_vector = Vector2(
-			Input.get_action_strength('ui_p2_right') - Input.get_action_strength("ui_p2_left"),
-			Input.get_action_strength("ui_p2_down") - Input.get_action_strength("ui_p2_up")
+			Input.get_action_strength('ui_right') - Input.get_action_strength("ui_left"),
+			Input.get_action_strength("ui_down") - Input.get_action_strength("ui_up")
 		)
 		if input_vector != Vector2.ZERO:
 			var new_position = player.position + input_vector * speed * delta
